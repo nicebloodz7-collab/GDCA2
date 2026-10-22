@@ -3,10 +3,10 @@
 	"gd": {
 		"win": "2.2081"
 	},
-	"id": "tuusuario.showcase-assist",
+	"id": "Weird10.showcase-assist",
 	"name": "Showcase Assist",
 	"version": "v0.2.0",
-	"developer": "tuusuario",
+	"developer": "Weird10",
 	"description": "Guía visual por macro (.gdr2), feedback de timing, click assist adaptativo con calculador de trayectoria, hitbox squeezer y compensador de lag. Cada módulo se activa por separado.",
 	"settings": {
 		"macro-path": {
