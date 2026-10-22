@@ -1,0 +1,160 @@
+{
+	"geode": "5.11.2",
+	"gd": {
+		"win": "2.2081"
+	},
+	"id": "tuusuario.showcase-assist",
+	"name": "Showcase Assist",
+	"version": "v0.2.0",
+	"developer": "tuusuario",
+	"description": "Guía visual por macro (.gdr2), feedback de timing, click assist adaptativo con calculador de trayectoria, hitbox squeezer y compensador de lag. Cada módulo se activa por separado.",
+	"settings": {
+		"macro-path": {
+			"type": "file",
+			"name": "Archivo del showcase (macro)",
+			"description": "GDR2 (.gdr2 / .gdr) o texto: una línea por input -> frame botón jugador down. Ej: 120 1 1 1",
+			"default": "",
+			"control": {
+				"dialog": "open",
+				"filters": [
+					{ "files": ["*.gdr2", "*.gdr", "*.txt"], "description": "Macro de showcase" }
+				]
+			}
+		},
+
+		"section-guide": { "type": "title", "name": "1. Guía visual" },
+		"guide-mode": {
+			"type": "string",
+			"name": "Modo de guía",
+			"description": "off = apagada · vertical = línea verde + hitbox objetivo · rhythm = barra rítmica superior · both = ambas",
+			"default": "off",
+			"one-of": ["off", "vertical", "rhythm", "both"]
+		},
+		"rhythm-lookahead": {
+			"type": "int",
+			"name": "Barra rítmica: anticipación (frames)",
+			"description": "Cuántos frames hacia adelante muestra la barra (240 frames = 1 segundo).",
+			"default": 150, "min": 30, "max": 480,
+			"control": { "slider": true }
+		},
+
+		"section-rating": { "type": "title", "name": "2. Feedback de precisión" },
+		"hit-rating": {
+			"type": "bool",
+			"name": "Mostrar PERFECT / GOOD / EARLY / LATE / MISS",
+			"description": "Compara tu click con el de la macro. Necesita una macro cargada (o el calculador de trayectoria).",
+			"default": true
+		},
+		"rating-perfect-range": {
+			"type": "int", "name": "PERFECT: hasta ± frames",
+			"default": 1, "min": 0, "max": 3, "control": { "slider": true }
+		},
+		"rating-good-range": {
+			"type": "int", "name": "GOOD: hasta ± frames",
+			"description": "Más allá de este valor el click se marca EARLY o LATE.",
+			"default": 4, "min": 2, "max": 8, "control": { "slider": true }
+		},
+
+		"section-assist": { "type": "title", "name": "3. Click assist" },
+		"click-assist": {
+			"type": "bool",
+			"name": "Activar click assist",
+			"description": "Nunca hace clicks por su cuenta: solo corrige los que vos hacés.",
+			"default": false
+		},
+		"assist-mode": {
+			"type": "string",
+			"name": "Modo del assist",
+			"description": "macro-snap = ajusta al frame de la macro · trajectory = simula el futuro, solo interviene si morís · hybrid = trajectory, prefiriendo el timing de la macro",
+			"default": "hybrid",
+			"one-of": ["macro-snap", "trajectory", "hybrid"]
+		},
+		"assist-window": {
+			"type": "int",
+			"name": "Tolerancia (frames)",
+			"description": "Hasta cuántos frames de diferencia se corrige. Un click más lejos no se toca y morís.",
+			"default": 10, "min": 1, "max": 14,
+			"control": { "slider": true }
+		},
+		"late-rollback": {
+			"type": "bool",
+			"name": "Corregir clicks tardíos (rollback)",
+			"description": "Experimental. Vuelve a un snapshot y re-simula. Necesita macro. Puede causar un pequeño tirón.",
+			"default": true
+		},
+		"adaptive-assist": {
+			"type": "bool",
+			"name": "Assist adaptativo",
+			"description": "Aprende tu patrón a lo largo de los intentos: los clicks que repetís (aunque difieran de la macro) se consideran intencionales y no se corrigen.",
+			"default": false
+		},
+		"adaptive-attempts": {
+			"type": "int", "name": "Adaptativo: intentos para aprender",
+			"default": 2, "min": 2, "max": 6, "control": { "slider": true }
+		},
+		"trajectory-horizon": {
+			"type": "int",
+			"name": "Trayectoria: horizonte (frames)",
+			"description": "Cuántos frames hacia adelante se simulan por click. Más = más seguro pero más pesado.",
+			"default": 30, "min": 10, "max": 120,
+			"control": { "slider": true }
+		},
+		"trajectory-assume-hold": {
+			"type": "int",
+			"name": "Trayectoria: hold asumido (frames)",
+			"description": "Cuánto se asume que mantenés el click si la macro no lo indica.",
+			"default": 4, "min": 1, "max": 60,
+			"control": { "slider": true }
+		},
+		"trajectory-budget": {
+			"type": "int",
+			"name": "Trayectoria: presupuesto de simulación",
+			"description": "Máximo de frames simulados por click. Si se agota, no se interviene (evita tirones).",
+			"default": 400, "min": 60, "max": 2000,
+			"control": { "slider": true }
+		},
+
+		"section-squeezer": { "type": "title", "name": "4. Hitbox squeezer" },
+		"hitbox-squeezer": {
+			"type": "bool",
+			"name": "Activar hitbox squeezer",
+			"description": "Achica la hitbox de pinchos y obstáculos dañinos (solo la colisión, no lo visual). Experimental.",
+			"default": false
+		},
+		"squeezer-percent": {
+			"type": "float",
+			"name": "Reducción (%)",
+			"default": 8.0, "min": 0.0, "max": 25.0,
+			"control": { "slider": true }
+		},
+
+		"section-lag": { "type": "title", "name": "5. Compensador de lag" },
+		"lag-compensator": {
+			"type": "bool",
+			"name": "Activar compensador de lag",
+			"description": "Si un click cae durante un micro-lag, amplía la tolerancia del assist según cuánto duró el tirón.",
+			"default": false
+		},
+		"lag-threshold-ms": {
+			"type": "int", "name": "Umbral de lag spike (ms)",
+			"description": "Un frame más largo que esto (y mucho más largo que lo normal) cuenta como spike.",
+			"default": 45, "min": 20, "max": 200, "control": { "slider": true }
+		},
+		"lag-max-bonus": {
+			"type": "int", "name": "Tolerancia extra máxima (frames)",
+			"default": 6, "min": 1, "max": 12, "control": { "slider": true }
+		},
+		"lag-indicator": {
+			"type": "bool", "name": "Mostrar aviso LAG",
+			"default": true
+		},
+
+		"section-debug": { "type": "title", "name": "Diagnóstico" },
+		"debug-log": {
+			"type": "bool",
+			"name": "Escribir estadísticas en el log",
+			"description": "Al reiniciar un intento anota ticks, simulaciones, rollbacks y hitboxes modificadas.",
+			"default": true
+		}
+	}
+}
