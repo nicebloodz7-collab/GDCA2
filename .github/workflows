@@ -1,0 +1,25 @@
+name: Build Showcase Assist
+
+on:
+  workflow_dispatch:   # permite correrlo a mano desde la pestaña Actions
+  push:
+    branches:
+      - "**"
+
+jobs:
+  build:
+    name: Windows
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the mod
+        uses: geode-sdk/build-geode-mod@main
+        id: build
+        # usa el SDK indicado en mod.json (5.11.2), así el build no se rompe si sale uno nuevo
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Showcase Assist (.geode)
+          path: ${{ steps.build.outputs.build-output }}
